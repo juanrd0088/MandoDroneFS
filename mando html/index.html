@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <!--No cache-->
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <title>Tank Control</title>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!--Bootstrap desde el CDN-->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <style>
+      body {overflow: hidden;}/*Impedir el scroll*/
+
+      #LControl {
+        -webkit-appearance: slider-vertical;
+        width: 10px;
+        height: 95vh; /* vh=viewport height, es 95 para que ocupe el largo de la pantalla respetando los margenes que he definido en cada elemento*/
+      }
+      #RControl {
+        -webkit-appearance: slider-vertical;
+        width: 10px;
+        height: 95vh; /* vh=viewport height, es 95 para que ocupe el largo de la pantalla respetando los margenes que he definido en cada elemento*/
+      }
+    </style>
+
+  </head>
+  <body background="noisy_grid.png">
+    <div class="container">
+        <div class="row"><!--Fila principal, 3 elementos controlI, botones, controlD-->
+            <div class="col-xs-3"><!--CONTROL IZQUIERDO, ocupa 3 columnas-->
+                <input class="col-xs-3" type="range" id="LControl" min="-10" max="10" step="1" value="0" style="margin-top:10px;margin-bottom:10px" />
+            </div>
+            <div class="col-xs-6" style="margin-top:20%;margin-bottom:20%"><!--BOTONES, 6 columnas-->
+              <div class="row">
+                <img src="./logo.JPG" class="img-responsive">
+              </div>
+              <div class="row" style="margin-top:5px">
+                <a class="btn btn-lg btn-danger btn-block" id="btnStop">Stop</a>
+              </div>
+              <div class="row" style="margin-top:5px">
+                <button class="btn btn-lg btn-success btn-block">Boomerang</button>
+              </div>
+              <div class="row" style="margin-top:5px">
+                <a class="col-xs-6 btn btn-lg btn-success btn-block" href="C:\Users\jramosdi\Desktop\DRONE FS\mando html/mapa.html" id="btnAuto">Auto</a>
+                <!--<button class="col-xs-6 btn btn-lg btn-success" id="btnManual" >Manual</button>-->
+              </div>
+              
+            </div>
+            <div class="col-xs-3"><!--CONTROL DERECHO, 3 columnas-->
+                <input class="pull-right" type="range" id="RControl" min="-10" max="10" step="1" value="0" style="margin-top:10px;margin-bottom:10px" />
+            </div>
+        </div>
+    </div> 
+  <script>
+  var modo = "manual";
+  var velIzq=0; //Velocidad izqda
+  var velDcha=0; //Velocidad dcha
+ 
+  $('#LControl').on('touchmove',function(){
+    $('#btnStop').html("Stop: "+"("+this.value+"/"+$('#RControl').val()+")");
+    velIzq=this.value;
+    });
+    //Al loro con esto, no vaya a ser que cuando haga el boton de stop no se envien los valores de cero. Una posible solucion es hacer aqui un send, y otro en la funcion stop. Preguntar a joseja si no serian demasiados sends.
+  $('#RControl').on('touchmove',function(){
+    $('#btnStop').html("Stop: "+"("+$('#LControl').val()+"/"+this.value+")");
+    velDcha=this.value;
+    });
+
+  $('#btnStop').on('click',function(){
+    $('#LControl').val("0");
+    $('#RControl').val("0");
+    $('#btnStop').html("Stop: (0/0)");
+    })
+
+
+  </script>
+  </body>

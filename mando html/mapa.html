@@ -35,7 +35,6 @@
     </div>
     <script>
       var map;
-      var terminado=false;
       
       function initMap() {
         //Con esto personalizo el marcador inicial
@@ -88,7 +87,6 @@
           console.log("Selecciono");
           path = [];
           recorrido = [];
-          var puntosRuta= setInterval(mi_ruta, 1000)
           });
               
         google.maps.event.addListener(m_ruta, 'drag', function() {              
@@ -101,7 +99,6 @@
         google.maps.event.addListener(m_ruta, 'dragend', function() {
           console.log("Termino");
           m_ruta.draggable=false;
-          clearInterval(puntosRuta);
           });          
             
         function updateLinea(path){
@@ -109,12 +106,8 @@
           linea.setPath(path);
           linea.setMap(map);
           console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
-          //document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
-          }
-
-        function mi_ruta(){
           document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
-        }
+          }
       }
       
     </script>

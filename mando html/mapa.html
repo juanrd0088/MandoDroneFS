@@ -35,6 +35,7 @@
     </div>
     <script>
       var map;
+      var terminado=false;
       
       function initMap() {
         //Con esto personalizo el marcador inicial
@@ -75,6 +76,7 @@
         title:"Arrastrar"
       });
       m_ruta.setMap(map);
+      
       var linea = new google.maps.Polyline({
               path: path,
               strokeColor: '#FF0000',
@@ -82,33 +84,33 @@
               strokeWeight: 2
             });
 
-            google.maps.event.addListener(m_ruta, 'dragstart', function() {
-              console.log("Selecciono");
-              path = [];
-              recorrido = [];
-            });
+      google.maps.event.addListener(m_ruta, 'dragstart', function() {
+        console.log("Selecciono");
+        path = [];
+        recorrido = [];
+        });
             
-            google.maps.event.addListener(m_ruta, 'drag', function() {
-              
-              console.log("Arrastro");
-              path.push(m_ruta.getPosition());
-              recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
-              updateLinea(path);
-            });
+      google.maps.event.addListener(m_ruta, 'drag', function() {              
+        console.log("Arrastro");
+        path.push(m_ruta.getPosition());
+        recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+        updateLinea(path);
+        });
             
-            google.maps.event.addListener(m_ruta, 'dragend', function() {
-              console.log("Termino");
-              m_ruta.draggable=false;
-            });
+      google.maps.event.addListener(m_ruta, 'dragend', function() {
+        console.log("Termino");
+        terminado = true;
+        m_ruta.draggable=false;
+        });
           
           
-          function updateLinea(path){
-            linea.setMap(null);
-            linea.setPath(path);
-            linea.setMap(map);
-            console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
-            document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
-          }
+      function updateLinea(path){
+        linea.setMap(null);
+        linea.setPath(path);
+        linea.setMap(map);
+        console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+        document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
+        }
       }
       
     </script>

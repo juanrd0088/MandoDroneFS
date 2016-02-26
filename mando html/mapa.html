@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Map</title>
+    <title>DroneFS</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -31,6 +31,7 @@
     <div id="botones" class="col-xs-4">
       <a class="btn btn-success btn-lg btn-block" href="./mando.html">Manual</a>
       <a class="btn btn-success btn-lg btn-block" onclick="pintaRuta()">Pinta una ruta</a>
+      <a class="btn btn-danger btn-lg btn-block">Start</a>
       <p id="ruta"></p>
     </div>
     <script>
@@ -50,7 +51,7 @@
 
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: -34.397, lng: 150.644},
-          zoom: 8
+          zoom: 15
         });
         //Marcador con tu posicion
         var marker_init = new google.maps.Marker({
@@ -67,6 +68,7 @@
         //Lo primero que hago es limpiar la ruta anterior y preparar la siguiente
         //...
         var path=[];
+        var recorrido=[];
         //Marcador con el que indicas el camino
         var m_ruta = new google.maps.Marker({
           position: {lat: -34.397, lng: 150.644},
@@ -106,7 +108,7 @@
           linea.setPath(path);
           linea.setMap(map);
           console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
-          document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
+          //document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
           }
       }
       

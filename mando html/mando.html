@@ -68,8 +68,7 @@
   var velIzq=0; //Velocidad izqda
   var velDcha=0; //Velocidad dcha
  
-  //$('#LControl').on('touchmove',function(){
-  $('#LControl').on('click',function(){
+  $('#LControl').on('touchmove',function(){
     $('#btnStop').html("Stop: "+"("+this.value+"/"+$('#RControl').val()+")");
     velIzq=this.value;
     var xhttp = new XMLHttpRequest();
@@ -78,7 +77,7 @@
     xhttp.send("Left=" + velIzq);
     });
     //Al loro con esto, no vaya a ser que cuando haga el boton de stop no se envien los valores de cero. Una posible solucion es hacer aqui un send, y otro en la funcion stop. Preguntar a joseja si no serian demasiados sends.
-  $('#RControl').on('click',function(){
+  $('#RControl').on('touchmove',function(){
     $('#btnStop').html("Stop: "+"("+$('#RControl').val()+"/"+this.value+")");
     velDcha=this.value;
     var xhttp = new XMLHttpRequest();

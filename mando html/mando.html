@@ -73,16 +73,16 @@
     $('#btnStop').html("Stop: "+"("+this.value+"/"+$('#RControl').val()+")");
     velIzq=this.value;
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://192.168.1.40:8080/moveL", true);
+    xhttp.open("POST", "http://192.168.43.37:8080/moveL", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send("Left=" + velIzq);
     });
     //Al loro con esto, no vaya a ser que cuando haga el boton de stop no se envien los valores de cero. Una posible solucion es hacer aqui un send, y otro en la funcion stop. Preguntar a joseja si no serian demasiados sends.
   $('#RControl').on('click',function(){
-    $('#btnStop').html("Stop: "+"("+$('#LControl').val()+"/"+this.value+")");
+    $('#btnStop').html("Stop: "+"("+$('#RControl').val()+"/"+this.value+")");
     velDcha=this.value;
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://192.168.1.40:8080/moveR", true);
+    xhttp.open("POST", "http://192.168.43.37:8080/moveR", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send("Right=" + velDcha);
     });
@@ -92,11 +92,11 @@
     $('#RControl').val("0");
     $('#btnStop').html("Stop: (0/0)");
     var xhttpL = new XMLHttpRequest();
-    xhttpL.open("POST", "http://192.168.1.40:8080/moveL", true);
+    xhttpL.open("POST", "http://192.168.43.37:8080/moveL", true);
     xhttpL.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttpL.send("Left=" + 0);
     var xhttpR = new XMLHttpRequest();
-    xhttpR.open("POST", "http://192.168.1.40:8080/moveR", true);
+    xhttpR.open("POST", "http://192.168.43.37:8080/moveR", true);
     xhttpR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttpR.send("Right=" + 0);
     });
@@ -107,7 +107,7 @@
     $('#btnStop').html("Stop: (0/0)");
     
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://192.168.1.40:8080/init", true);
+    xhttp.open("POST", "http://192.168.43.37:8080/init", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.send();
     });

@@ -21,7 +21,19 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <style>
-      body {overflow: hidden;}/*Impedir el scroll*/
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #map {
+        height: 100%;
+      }
+      #botonesMapa {
+        margin-top: 10px;
+      }
+      /*body {overflow: hidden;}*//*Impedir el scroll*/
 
       #LControl {
         -webkit-appearance: slider-vertical;
@@ -33,11 +45,25 @@
         width: 10px;
         height: 95vh; /* vh=viewport height, es 95 para que ocupe el largo de la pantalla respetando los margenes que he definido en cada elemento*/
       }
+      #btnInit {
+        font-size: 60px;
+        padding: 10px 16px;
+        border-radius: 6px;
+        display:block;
+        position:absolute;
+        top:40%;
+        left:40%;        
+      }
     </style>
 
   </head>
   <body background="noisy_grid.png">
-    <div class="container">
+
+    <div class="container" id="init">
+      <button class="btn btn-lg btn-danger" id="btnInit">Start</button>
+    </div>
+
+    <div class="container" id="modoMan" style="display:none">
         <div class="row"><!--Fila principal, 3 elementos controlI, botones, controlD-->
             <div class="col-xs-3"><!--CONTROL IZQUIERDO, ocupa 3 columnas-->
                 <input class="col-xs-3" type="range" id="LControl" min="-10" max="10" step="1" value="0" style="margin-top:10px;margin-bottom:10px" />
@@ -53,8 +79,8 @@
                 <button class="btn btn-lg btn-success btn-block" id="btnBoomerang">Boomerang</button>
               </div>
               <div class="row" style="margin-top:5px">
-                <a class="col-xs-6 btn btn-lg btn-success btn-block" href="./mapa.html" id="btnAuto">Auto</a>
-                <!--<button class="col-xs-6 btn btn-lg btn-success" id="btnManual" >Manual</button>-->
+                <!--<a class="col-xs-6 btn btn-lg btn-success btn-block" href="./mapa.html" id="btnAuto">Auto</a>-->
+                <a class="col-xs-6 btn btn-lg btn-success btn-block" id="btnAuto">Auto</a>
               </div>
               
             </div>
@@ -62,11 +88,32 @@
                 <input class="pull-right" type="range" id="RControl" min="-10" max="10" step="1" value="0" style="margin-top:10px;margin-bottom:10px" />
             </div>
         </div>
-    </div> 
+    </div>
+
+    <div class="container" id="modoAuto" style="display:none;height:100%; width:100%;">
+      <div id="map" class="col-xs-8"></div>
+      <div id="botonesMapa" class="col-xs-4">
+        <a class="btn btn-success btn-lg btn-block" id="btnManual">Manual</a>
+        <a class="btn btn-success btn-lg btn-block" onclick="pintaRuta()">Pinta una ruta</a>
+        <a class="btn btn-danger btn-lg btn-block">Start</a>
+        <p id="ruta"></p>
+      </div>
+    </div>  
+
   <script>
   var modo = "manual";
   var velIzq=0; //Velocidad izqda
   var velDcha=0; //Velocidad dcha
+
+  $('#btnInit').on('click',function(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "http://192.168.43.37:8080/init", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send();
+    $('#btnInit').fadeOut("slow");
+    $('#modoMan').slideDown(1500);
+
+  });
  
   $('#LControl').on('touchmove',function(){
     $('#btnStop').html("Stop: "+"("+this.value+"/"+$('#RControl').val()+")");
@@ -78,7 +125,7 @@
     });
     //Al loro con esto, no vaya a ser que cuando haga el boton de stop no se envien los valores de cero. Una posible solucion es hacer aqui un send, y otro en la funcion stop. Preguntar a joseja si no serian demasiados sends.
   $('#RControl').on('touchmove',function(){
-    $('#btnStop').html("Stop: "+"("+$('#RControl').val()+"/"+this.value+")");
+    $('#btnStop').html("Stop: "+"("+$('#LControl').val()+"/"+this.value+")");
     velDcha=this.value;
     var xhttp = new XMLHttpRequest();
     xhttp.open("POST", "http://192.168.43.37:8080/moveR", true);
@@ -104,13 +151,102 @@
     $('#LControl').val("0");
     $('#RControl').val("0");
     $('#btnStop').html("Stop: (0/0)");
-    
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://192.168.43.37:8080/init", true);
-    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhttp.send();
     });
 
+  $('#btnAuto').on('click',function(){
+    $('#modoMan').fadeOut();
+    $('#modoAuto').show();
+    initMap();//Por ahora aqui, va bien
+  });
 
+  $('#btnManual').on('click',function(){
+    $('#modoAuto').fadeOut();
+    $('#modoMan').show();
+  });
+  </script>
+  
+  <script>
+  var map;
+      
+  function initMap() {
+    //Con esto personalizo el marcador inicial
+    var pinColor = "5cb85c";
+    var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+      new google.maps.Size(21, 34),
+      new google.maps.Point(0,0),
+      new google.maps.Point(10, 34));
+    var pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+      new google.maps.Size(40, 37),
+      new google.maps.Point(0, 0),
+      new google.maps.Point(12, 35));
+
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 15
+    });
+    //Marcador con tu posicion
+    var marker_init = new google.maps.Marker({
+      position: {lat: -34.397, lng: 150.644},
+      map: map,
+      draggable:false,
+      icon: pinImage,
+      shadow: pinShadow,
+      title:"Estas aqui"
+    });
+    marker_init.setMap(map);
+    console.log("Mapa creado")
+  }
+  function pintaRuta(){
+    //Lo primero que hago es limpiar la ruta anterior y preparar la siguiente
+    //...
+    var path=[];
+    var recorrido=[];
+    //Marcador con el que indicas el camino
+    var m_ruta = new google.maps.Marker({
+      position: {lat: -34.397, lng: 150.644},
+      map: map,
+      draggable:true,
+      title:"Arrastrar"
+    });
+    m_ruta.setMap(map);
+    
+    var linea = new google.maps.Polyline({
+            path: path,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+
+    google.maps.event.addListener(m_ruta, 'dragstart', function() {
+      console.log("Selecciono");
+      path = [];
+      recorrido = [];
+      });
+          
+    google.maps.event.addListener(m_ruta, 'drag', function() {              
+      console.log("Arrastro");
+      path.push(m_ruta.getPosition());
+      //insertar al recorrido solo cuando la distancia sea 10 metros
+      recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+      updateLinea(path);
+      });
+          
+    google.maps.event.addListener(m_ruta, 'dragend', function() {
+      console.log("Termino");
+      m_ruta.draggable=false;
+      });          
+        
+    function updateLinea(path){
+      linea.setMap(null);
+      linea.setPath(path);
+      linea.setMap(map);
+      console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+      document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
+      }
+  }
+
+  </script>
+  <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoD7v-YDOAv8u-pjOfEhd4mq9BETnRyo0">
   </script>
   </body>

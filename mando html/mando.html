@@ -95,7 +95,7 @@
       <div id="botonesMapa" class="col-xs-4">
         <a class="btn btn-success btn-lg btn-block" id="btnManual">Manual</a>
         <a class="btn btn-success btn-lg btn-block" onclick="pintaRuta()">Pinta una ruta</a>
-        <a class="btn btn-danger btn-lg btn-block">Start</a>
+        <a class="btn btn-danger btn-lg btn-block" id="startAuto">Start</a>
         <p id="ruta"></p>
       </div>
     </div>  
@@ -163,6 +163,9 @@
     $('#modoAuto').fadeOut();
     $('#modoMan').show();
   });
+
+  $('#startAuto').on('click',function(){
+  });  
   </script>
   
   <script>
@@ -221,13 +224,23 @@
       console.log("Selecciono");
       path = [];
       recorrido = [];
+      path.push(m_ruta.getPosition());
+      recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+      anteriorLat = m_ruta.getPosition().lat();
+      anteriorLong = m_ruta.getPosition().lng();
       });
           
-    google.maps.event.addListener(m_ruta, 'drag', function() {              
+    google.maps.event.addListener(m_ruta, 'drag', function() {           
       console.log("Arrastro");
       path.push(m_ruta.getPosition());
-      //insertar al recorrido solo cuando la distancia sea 10 metros
-      recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+      //Con esto añadimos al recorrido solo si hay una distancia de 10 metros de diferencia
+      actualLat = m_ruta.getPosition().lat();
+      actualLong = m_ruta.getPosition().lng();
+      if ((Math.abs(actualLat-anteriorLat)==0.0001)||(Math.abs(actualLong-anteriorLong)==0.0001)){      
+        recorrido.push(actualLat + "; " + actualLong);
+      }
+      //recorrido.push(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
+      document.getElementById("ruta").innerHTML+=actualLat + "; " + actualLong;
       updateLinea(path);
       });
           
@@ -241,7 +254,10 @@
       linea.setPath(path);
       linea.setMap(map);
       console.log(m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng());
-      document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
+      //document.getElementById("ruta").innerHTML+="Anterior: ";
+      //document.getElementById("ruta").innerHTML+=m_ruta.getPosition().lat() + ";" + m_ruta.getPosition().lng();
+      anteriorLat = m_ruta.getPosition().lat();
+      anteriorLong = m_ruta.getPosition().lng();
       }
   }
 
